@@ -99,7 +99,7 @@ class PasswordManager:
         if old_password != new_password:
             pass
         else:
-            messagebox.showerror("Error", "La contraseña nueva es identica a la ingresada")
+            messagebox.showerror("Error", "La contraseña nueva es identica a la ingresada.")
             return
         
         hashed_password = self.hash_password(old_password)
