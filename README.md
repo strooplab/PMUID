@@ -5,3 +5,5 @@ contraseñas en un archivo de JSON, dentro de este programa podras crear tu usua
 propio, estos seran los únicos datos que deberas memorizar, pues todo se almacena con 
 un sistema de encriptación que te permite guardar y obtener  tus contraseñas sin 
 que nadie pueda tener acceso a las mismas.# PMUID
+
+El ejecutable se encuentra en la misma carpeta con el icono del programa

@@ -1,14 +1,15 @@
 import tkinter as tk
 from tkinter import messagebox
-import json, hashlib, os, pyperclip, string, random
+import json, hashlib, os, pyperclip, string, random, sys
 from cryptography.fernet import Fernet
 
 class PasswordManager:
     def __init__(self, master):
         self.master = master
-        icono = tk.PhotoImage(file="Images/pyramid.png")
-        icono = icono.subsample(30)
-        self.master.iconphoto(True, icono)
+        file = "src\pyramid.ico"
+        icon_file = self.resource_path(file)
+        print("Icon File Path: ",icon_file)
+        self.master.iconbitmap(True , default=icon_file)  # Set
         self.master.title("P4ssw0rd_M4n4g3R")
         self.master.geometry("400x300")
         self.master.configure(bg="#121212")
@@ -377,6 +378,11 @@ class PasswordManager:
     
     def quit(self):
         self.master.destroy()
+
+    def resource_path(self,relative_path):
+        
+        base_path = os.path.abspath(".")
+        return os.path.join(base_path,relative_path)
 
 def main():
     root = tk.Tk()
