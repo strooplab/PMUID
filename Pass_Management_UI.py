@@ -188,6 +188,7 @@ class PasswordManager:
         self.add_password_window.title("Añadir Contraseña")
         self.add_password_window.geometry("400x200")
         self.add_password_window.configure(bg="#1A1A1A")
+        self.gen_pass = None
         
         self.service_label = tk.Label(self.add_password_window, text="Servicio:", bg="#2A2A2A", fg="white")
         self.service_label.pack(pady=5)
@@ -206,7 +207,7 @@ class PasswordManager:
         self.gen_password_button.pack(pady=10)
     
     def save_password(self):
-        if self.gen_pass != '':
+        if self.gen_pass != None:
             password = self.gen_pass
         else:
             password = self.password_entry.get()
