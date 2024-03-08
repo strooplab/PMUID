@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-import json, hashlib, os, pyperclip, string, random, sys
+import json, hashlib, os, pyperclip, string, random, stat
 from cryptography.fernet import Fernet
 
 class PasswordManager:
@@ -55,6 +55,26 @@ class PasswordManager:
         self.register_button = tk.Button(self.register_window, text="Registrar", bg="#2A2A5A", fg="white", command=self.save_user)
         self.register_button.pack(pady=10)
     
+    def save_user(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        hashed_password = self.hash_password(password)
+        
+        user_data = {'Username': username, 'UPassword': hashed_password}
+        file_name = 'user_data.json'
+        
+        if os.path.exists(file_name):
+            with open(file_name, 'r') as file:
+                try:
+                    user_data = json.load(file)
+                except json.JSONDecodeError:
+                    user_data = {'Username': username, 'UPassword': hashed_password}
+
+        with open(file_name, 'w+') as file:
+            json.dump(user_data, file)
+            messagebox.showinfo("Registro Completado", "Usuario registrado exitosamente")
+            self.register_window.destroy()
+    
     def login(self):
         self.login_window = tk.Toplevel(self.master)
         self.login_window.title("Ingresar")
@@ -73,6 +93,27 @@ class PasswordManager:
         
         self.login_button = tk.Button(self.login_window, text="Ingresar", bg="#2A2A5A", fg="white", command=self.authenticate)
         self.login_button.pack(pady=10)
+    
+    def authenticate(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+        hashed_password = self.hash_password(password)
+        
+        file_name = 'user_data.json'
+        
+        if os.path.exists(file_name):
+            with open(file_name, 'r') as file:
+                user_data = json.load(file)
+                stored_password = user_data.get('UPassword')
+                
+                if hashed_password == stored_password and username == user_data.get('Username'):
+                    messagebox.showinfo("Acceso Permitido", "Inicio de sesión exitoso")
+                    self.password_management()
+                    self.login_window.destroy()
+                else:
+                    messagebox.showerror("Error", "Error en la autenticación")
+        else:
+            messagebox.showerror("Error", "Usuario no registrado")
 
     def change_password(self):
         self.change_window = tk.Toplevel(self.master)
@@ -123,44 +164,7 @@ class PasswordManager:
                 else:
                     messagebox.showerror("Error", "Error al intentar cambiar la contraseña")
         else:
-            messagebox.showerror("Error", "Usuario no registrado")
-        
-    def save_user(self):
-        username = self.username_entry.get()
-        password = self.password_entry.get()
-        hashed_password = self.hash_password(password)
-        
-        user_data = {'Username': username, 'UPassword': hashed_password}
-        file_name = 'user_data.json'
-        
-        if os.path.exists(file_name):
-            messagebox.showerror("Error", "Usuario ya registrado")
-        else:
-            with open(file_name, 'w+') as file:
-                json.dump(user_data, file)
-                messagebox.showinfo("Registro Completado", "Usuario registrado exitosamente")
-                self.register_window.destroy()
-    
-    def authenticate(self):
-        username = self.username_entry.get()
-        password = self.password_entry.get()
-        hashed_password = self.hash_password(password)
-        
-        file_name = 'user_data.json'
-        
-        if os.path.exists(file_name):
-            with open(file_name, 'r') as file:
-                user_data = json.load(file)
-                stored_password = user_data.get('UPassword')
-                
-                if hashed_password == stored_password and username == user_data.get('Username'):
-                    messagebox.showinfo("Acceso Permitido", "Inicio de sesión exitoso")
-                    self.password_management()
-                    self.login_window.destroy()
-                else:
-                    messagebox.showerror("Error", "Error en la autenticación")
-        else:
-            messagebox.showerror("Error", "Usuario no registrado")
+            messagebox.showerror("Error", "Aún no existe un usuario para hacer un cambio de contraseña")
     
     def password_management(self):
         self.password_window = tk.Toplevel(self.master)
@@ -214,8 +218,9 @@ class PasswordManager:
         service = self.service_entry.get()
         cipher = self.encrypted_key()
         encrypted_password = self.encrypt_password(cipher, password)
+        file_name = 'passwords.json'
         
-        if not os.path.exists('passwords.json'):
+        if not os.path.exists(file_name) or os.stat(file_name).st_size <= 0:
             data = []
         else:
             with open('passwords.json', 'r') as file:
@@ -274,13 +279,18 @@ class PasswordManager:
     def retrieve_password(self):
         service = self.service_entry.get()
         cipher = self.encrypted_key()
+        file_name = 'passwords.json'
         
-        if not os.path.exists('passwords.json'):
+        if not os.path.exists(file_name) or os.stat(file_name).st_size <= 0:
             messagebox.showerror("Error", "No hay contraseñas almacenadas")
             return
-        
-        with open('passwords.json', 'r') as file:
-            data = json.load(file)
+        try:
+            with open(file_name, 'r' ) as file:
+                data = json.load(file)
+        except json.decoder.JSONDecodeError:
+            data = {}
+            messagebox.showerror("Error", "Contraseñas sin formato válido")
+            return
         
         for i in data:
             if i['Servicio'] == service:
@@ -289,7 +299,7 @@ class PasswordManager:
                 messagebox.showinfo("Contraseña Obtenida", f"{service}: {decrypted_password}\nContraseña copiada al portapapeles")
                 self.get_password_window.destroy()
                 return
-        
+
         messagebox.showerror("Error", "Contraseña no encontrada.")
 
     def delete_password(self):
@@ -308,27 +318,36 @@ class PasswordManager:
  
     def deleted_password(self):
         service = self.service_entry.get()
+        file_name = 'passwords.json'
 
-        if not os.path.exists('passwords.json'):
-            messagebox.showinfo("Info","La contraseña no ha sido guardada.")
-            return
+        if not os.path.exists(file_name) or os.stat(file_name).st_size == 0:
+            messagebox.showinfo("Info","Sin contraseñas por eliminar.")
+            self.delete_password_window.destroy()
         try:
             with open('passwords.json', 'r') as file:
                 data = json.load(file)
         except json.JSONDecodeError:
-            data = []
             messagebox.showerror("Error", "Contraseña no encontrada")
+            return
+        
+        password_E = False
         for i, item in enumerate(data):
             if item['Servicio'] == service:
                 del data[i]
-                messagebox.showinfo("Contraseña borrada", f"Contraseña borrada: {service}\n")
-                self.delete_password_window.destroy()
+                password_E: True
                 break 
-        with open('passwords.json', 'w') as file:
-            json.dump(data, file, indent=4)
-        self.view_services()
-        self.view_services_window.destroy()
-    
+
+        if password_E:
+            with open(file_name, 'w') as file:
+                json.dump(data, file, indent=4)
+            messagebox.showinfo("Contraseña borrada", f"Contraseña borrada: {service}\n")
+            self.view_services()
+            self.view_services_window.destroy()
+        else:
+            messagebox.showinfo("Info", "No se encontraron contraseñas")
+            self.delete_password_window.destroy()
+            
+        
     def view_services(self):
         self.view_services_window = tk.Toplevel(self.master)
         self.view_services_window.title("Servicios Guardados")
@@ -362,15 +381,21 @@ class PasswordManager:
         return Fernet(key)
     
     def encrypted_key(self):
-        key_file = 'fernet_key.key'
+        key_file = 'build/Pass_Management_UI/fernet_key.key'
         if os.path.exists(key_file):
-            with open(key_file,'rb') as f:
-                key = f.read()
+            if os.stat(key_file).st_size > 0:
+                with open(key_file,'rb') as f:
+                    key = f.read()
+            else:
+                key = self.gen_key()
+            with open(key_file, 'wb') as file:
+                file.write(key)
+                os.chmod(key_file, stat.S_IRUSR | stat.S_IWUSR)
         else:
             key = self.gen_key()
             with open(key_file, 'wb') as file:
                 file.write(key)
-        
+                os.chmod(key_file, stat.S_IRUSR | stat.S_IWUSR)
         cipher = self.initialize_cypher(key)
         return cipher
     
@@ -381,7 +406,6 @@ class PasswordManager:
         self.master.destroy()
 
     def resource_path(self,relative_path):
-        
         base_path = os.path.abspath(".")
         return os.path.join(base_path,relative_path)
 
