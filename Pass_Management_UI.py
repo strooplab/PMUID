@@ -8,7 +8,6 @@ class PasswordManager:
         self.master = master
         file = "src\pyramid.ico"
         icon_file = self.resource_path(file)
-        print("Icon File Path: ",icon_file)
         self.master.iconbitmap(True , default=icon_file)  # Set
         self.master.title("P4ssw0rd_M4n4g3R")
         self.master.geometry("400x300")
@@ -334,8 +333,8 @@ class PasswordManager:
         for i, item in enumerate(data):
             if item['Servicio'] == service:
                 del data[i]
-                password_E: True
-                break 
+                password_E = True
+                break
 
         if password_E:
             with open(file_name, 'w') as file:
@@ -343,6 +342,7 @@ class PasswordManager:
             messagebox.showinfo("Contraseña borrada", f"Contraseña borrada: {service}\n")
             self.view_services()
             self.view_services_window.destroy()
+            self.delete_password_window.destroy()
         else:
             messagebox.showinfo("Info", "No se encontraron contraseñas")
             self.delete_password_window.destroy()
