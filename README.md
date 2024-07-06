@@ -34,60 +34,61 @@ Para iniciar el programa, simplemente ejecuta el script PMUID.py:
 
 ## 1. Registro de Usuario
 
-    - Al iniciar el programa, haz clic en Registrar.
-    - Ingresa un nombre de usuario y una contraseña.
-    - Haz clic en Registrar para guardar tus datos. Esta será la única contraseña que necesitarás recordar.
-    
-    ***IMPORTANTE***
 
-    Esta contraseña no puede ser olvidada, ya que dentro del programa se crea una clave unica
-    para poder encriptar las contraseñas, debes conservar todos los datos devueltos
-    por la aplicación
+- Al iniciar el programa, haz clic en Registrar.
+- Ingresa un nombre de usuario y una contraseña.
+- Haz clic en Registrar para guardar tus datos. Esta será la única contraseña que necesitarás recordar.
+
+***IMPORTANTE***
+
+Esta contraseña no puede ser olvidada, ya que dentro del programa se crea una clave unica
+para poder encriptar las contraseñas, debes conservar todos los datos devueltos
+por la aplicación
 
 ## 2. Iniciar Sesión
 
-    - Haz clic en Ingresar.
-    - Ingresa tu nombre de usuario y contraseña.
-    - Haz clic en Ingresar para acceder al gestor de contraseñas.
+- Haz clic en Ingresar.
+- Ingresa tu nombre de usuario y contraseña.
+- Haz clic en Ingresar para acceder al gestor de contraseñas.
 
 ## 3. Añadir Contraseña
 
-    - Haz clic en Añadir Contraseña.
-    - Ingresa el nombre del servicio y la contraseña. Si deseas generar una contraseña aleatoria, 
-      primero debes ingresar el nombre del servicio, luego
-      haz clic en Generar Contraseña e ingresa el número de caracteres (máximo 20).
-    - Haz clic en Añadir Contraseña para guardar la contraseña.
+- Haz clic en Añadir Contraseña.
+- Ingresa el nombre del servicio y la contraseña. Si deseas generar una contraseña aleatoria, 
+    primero debes ingresar el nombre del servicio, luego
+    haz clic en Generar Contraseña e ingresa el número de caracteres (máximo 20).
+- Haz clic en Añadir Contraseña para guardar la contraseña.
 
 ## 4. Obtener Contraseña
 
-    - Haz clic en Obtener Contraseña.
-    - Ingresa el nombre del servicio.
-    - Haz clic en Obtener Contraseña para que pueda ser copiada al portapapeles.
+- Haz clic en Obtener Contraseña.
+- Ingresa el nombre del servicio.
+- Haz clic en Obtener Contraseña para que pueda ser copiada al portapapeles.
 
-    Si no estas seguro del nombre de tu servicio, puedes verificar en el boton
-    "Ver Servicios"
+Si no estas seguro del nombre de tu servicio, puedes verificar en el boton
+"Ver Servicios"
 
 ## 5. Borrar Contraseña
 
-    - Haz clic en Borrar Contraseña.
-    - Ingresa el nombre del servicio.
-    - Haz clic en Borrar Contraseña para eliminar la contraseña. Facil y sencillo
+- Haz clic en Borrar Contraseña.
+- Ingresa el nombre del servicio.
+- Haz clic en Borrar Contraseña para eliminar la contraseña. Facil y sencillo
 
 
 ## 6. Importar Contraseñas 
 
-    ***FUNCION EXPERIMENTAL (DISPONIBLE SOLO EN FEDORA 40)***
+***FUNCION EXPERIMENTAL (DISPONIBLE SOLO EN FEDORA 40)***
 
-    - Haz clic en Importar Contraseñas.
-    - Selecciona el navegador desde el cual deseas importar las contraseñas (actualmente soportado: Chrome).
+- Haz clic en Importar Contraseñas.
+- Selecciona el navegador desde el cual deseas importar las contraseñas (actualmente soportado: Chrome).
 
 ## 7. Ver Servicios
 
-    - Haz clic en Ver Servicios para listar todos los servicios con contraseñas almacenadas.
+- Haz clic en Ver Servicios para listar todos los servicios con contraseñas almacenadas.
 
 ## 8. Salir del Programa
 
-    - Haz clic en Salir para cerrar el programa.
+- Haz clic en Salir para cerrar el programa.
 
 ## Contribuciones
 
