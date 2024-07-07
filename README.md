@@ -30,6 +30,12 @@ Para iniciar el programa, simplemente ejecuta el script PMUID.py:
 ./password_manager.py
 ```
 
+## Disponible en Windows y Linux
+
+El ejecutable .exe de windows se encuentra dentro de la carpeta "dist"
+
+Para linux esta el archivo Python "PMUID.py" ejecutable dentro de bash, zsh o cualquier shell
+
 ## Funciones Principales
 
 ## 1. Registro de Usuario
