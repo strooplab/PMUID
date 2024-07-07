@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import tkinter as tk
-import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, subprocess
+import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, subprocess, time
 from tkinter import messagebox, ttk
 from pyfiglet import Figlet
 from termcolor import cprint
@@ -29,9 +31,9 @@ class PasswordManager:
     #contraseña del usuario y salir del programa
 
     def __init__(self, master):
-        modes = ['big_money-ne', 'cosmic']
+        modes = ['big_money-ne', 'cosmic', 'slant']
         mode_fig = random.choice(modes)
-        welcome_banner = Figlet(font='cosmic')
+        welcome_banner = Figlet(font='slant')
         welcome_text = welcome_banner.renderText('Welcome To:')
         pmuid_banner = Figlet(font=mode_fig)
         pmuid_text = pmuid_banner.renderText('PMUID')
@@ -724,10 +726,46 @@ class PasswordManager:
 
 #Inicialización del programa
 
+def cargando():
+    frames = [
+        "[      ]",
+        "[*     ]",
+        "[**    ]",
+        "[ ***  ]",
+        "[  *** ]",
+        "[   ***]",
+        "[    **]",
+        "[     *]",
+    ]
+
+    duration = 3  
+    interval = 0.2  
+
+    start_time = time.time()
+    end_time = start_time + duration
+
+    while time.time() < end_time:
+        for frame in frames:
+            print(frame, end="\r")
+            time.sleep(interval)
+
+    print("[ Bienvenido ]")
+    time.sleep(1)
+    os.system('clear')
+
 def main():
+    cprint("Cargando...", "cyan")
+    cargando()
     root = tk.Tk()
     app = PasswordManager(root)
     root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    try:
+        os.system('clear')
+        main()
+    except KeyboardInterrupt:
+        print('\n[*] Abortado')
+        exit(0)
+    except Exception as e:
+        print('[!] ERROR: ' + str(e))
