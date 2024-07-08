@@ -37,8 +37,8 @@ class PasswordManager:
         welcome_text = welcome_banner.renderText('Welcome To:')
         pmuid_banner = Figlet(font=mode_fig)
         pmuid_text = pmuid_banner.renderText('PMUID')
-        cprint(welcome_text, 'blue')
-        cprint(pmuid_text, 'blue')
+        cprint(welcome_text, 'cyan')
+        cprint(pmuid_text, 'cyan')
         self.cipher = self.encrypted_key()
         self.passwords = []
         self.master = master
@@ -50,9 +50,7 @@ class PasswordManager:
         self.password_manager_frame = tk.Frame(self.master, bg="#1A1A1A")
         self.password_manager_frame.pack(expand=True, fill="both")
         
-        self.register_button = tk.Button(self.password_manager_frame, 
-                                         text="Registrar", bg="#2A2A2A", 
-                                         fg="white", command=self.register)
+        self.register_button = tk.Button(self.password_manager_frame, text="Registrar", bg="#2A2A2A", fg="white", command=self.register)
         
         self.register_button.pack(pady=(30,10), padx=10, fill="both")
         
@@ -223,7 +221,7 @@ class PasswordManager:
         text = system_banner.renderText(system)
         cprint(text, 'blue')
         if system == 'Windows':
-            file = 'src/pyramid.ico'
+            file = r'src\pyramid.ico'
             icon_file = self.resource_path(file)
         elif system == 'Linux':
             file = 'src/pyramid.png'
@@ -714,9 +712,9 @@ class PasswordManager:
     
     #Convertir una ruta absoluta a una ruta relativa
 
-    def resource_path(self,relative_path):
+    def resource_path(self, relative_path):
         base_path = os.path.abspath(".")
-        return os.path.join(base_path,relative_path)
+        return os.path.join(base_path, relative_path)
     
     #Version
     
