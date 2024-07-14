@@ -1,9 +1,0 @@
-README.md
-setup.py
-src/pmuid.py
-src/PMUID.egg-info/PKG-INFO
-src/PMUID.egg-info/SOURCES.txt
-src/PMUID.egg-info/dependency_links.txt
-src/PMUID.egg-info/entry_points.txt
-src/PMUID.egg-info/requires.txt
-src/PMUID.egg-info/top_level.txt

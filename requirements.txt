@@ -3,7 +3,6 @@ cffi==1.16.0
 charset-normalizer==3.3.2
 cryptography==42.0.8
 idna==3.7
-pmuid @ file:///home/stroop/PMUID
 pycparser==2.22
 pyfiglet==1.0.2
 requests==2.32.3
