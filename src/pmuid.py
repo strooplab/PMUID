@@ -1,18 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import tkinter as tk
-import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, subprocess, time
-from tkinter import messagebox, ttk
-from pyfiglet import Figlet
-from termcolor import cprint
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from version import __version__
-
 """
 Biemvenido a PMUID! Este es un software de administración de contraseñas
 que permite almacenar y recuperar contraseñas de forma segura. Para
@@ -23,6 +11,17 @@ a almacenar tus contraseñas. Espero disfrutes esta nueva opción para guardar
 tus contraseñas en tu propio entorno!
 """
 
+import tkinter as tk
+import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, time
+from tkinter import messagebox, ttk, PhotoImage
+from pyfiglet import Figlet
+from termcolor import colored
+from cryptography.fernet import Fernet
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from datetime import datetime, timedelta
+from version import __version__
+
 #Clase contenedora de las interfaces y funciones del programa
 class PasswordManager:
 
@@ -31,19 +30,28 @@ class PasswordManager:
     #contraseña del usuario y salir del programa
 
     def __init__(self, master):
-        modes = ['big_money-ne', 'cosmic', 'slant']
+        super().__init__()
+        modes = ['slant']
         mode_fig = random.choice(modes)
+        welcome_t = 'Welcome To:'
+        pmuid_t ='PMUID'
         welcome_banner = Figlet(font='slant')
-        welcome_text = welcome_banner.renderText('Welcome To:')
+        welcome_text = welcome_banner.renderText(welcome_t)
         pmuid_banner = Figlet(font=mode_fig)
-        pmuid_text = pmuid_banner.renderText('PMUID')
-        cprint(welcome_text, 'cyan')
-        cprint(pmuid_text, 'cyan')
+        pmuid_text = pmuid_banner.renderText(pmuid_t)
+        try:
+            print(colored(welcome_text, 'cyan'))
+            print(colored(pmuid_text, 'cyan'))
+        except Exception:
+            print(welcome_t)
+            print(pmuid_t)
+        self.passwords_file = self.resource_path('src/gen/passwords.json')
+        self.user_file = self.resource_path('src/gen/user_data.json')
+        self.fernet_file = self.resource_path('src/gen/fernet_key.key')
         self.cipher = self.encrypted_key()
-        self.passwords = []
         self.master = master
         self.set_icon()
-        self.master.title("P4ssw0rd_M4n4g3R")
+        self.master.title("PMUID")
         self.master.geometry("400x300")
         self.master.configure(bg="#121212")
 
@@ -139,7 +147,7 @@ class PasswordManager:
         hashed_password = self.hash_password(password)
         
         user_data = {'Username': username, 'UPassword': hashed_password}
-        file_name = 'user_data.json'
+        file_name = self.user_file
         
         if os.path.exists(file_name):
             with open(file_name, 'r') as file:
@@ -160,7 +168,7 @@ class PasswordManager:
         password = self.password_entry.get()
         hashed_password = self.hash_password(password)
         
-        file_name = 'user_data.json'
+        file_name = self.user_file
         
         if os.path.exists(file_name):
             with open(file_name, 'r') as file:
@@ -191,7 +199,7 @@ class PasswordManager:
         hashed_password = self.hash_password(old_password)
         hashed_new_password = self.hash_password(new_password)
         
-        file_name = 'user_data.json'
+        file_name = self.user_file
 
         #Si el archivo existe, se procede a leerlo para comprobar la que la
         #contraseña actual es la misma que la que se ingreso en el programa
@@ -217,22 +225,24 @@ class PasswordManager:
 
     def set_icon(self):
         system = platform.system()
-        system_banner = Figlet(font='sub-zero')
+        system_banner = Figlet(font='slant')
         text = system_banner.renderText(system)
-        cprint(text, 'blue')
+        try:
+            print(colored(text, 'blue'))
+        except Exception:
+            print(system)
         if system == 'Windows':
-            file = r'src\pyramid.ico'
+            file = r'src/media/pyramid.ico'
             icon_file = self.resource_path(file)
         elif system == 'Linux':
-            file = 'src/pyramid.png'
+            file = 'src/media/pyramid.png'
             icon_file = self.resource_path(file)
         else:
             print("Unsupported operating system. Defaulting to no icon.")
             return
 
         try:
-            icon = tk.PhotoImage(file=icon_file)
-            self.master.call('wm', 'iconphoto', self.master._w, icon)
+            self.master.iconphoto(True, PhotoImage(file=icon_file))
         except tk.TclError:
             print(f"Icon file '{icon_file}' not found. Continuing without it.")
     
@@ -364,18 +374,18 @@ class PasswordManager:
         service = self.service_entry.get()
         cipher = self.encrypted_key()
         encrypted_password = self.encrypt_password(cipher, password)
-        file_name = 'passwords.json'
+        file_name = self.passwords_file
         
         if not os.path.exists(file_name) or os.stat(file_name).st_size <= 0:
             data = []
         else:
-            with open('passwords.json', 'r') as file:
+            with open(file_name, 'r') as file:
                 data = json.load(file)
         
         new_password = {'Servicio': service, 'Contraseña': encrypted_password}
         data.append(new_password)
         
-        with open('passwords.json','w') as file:
+        with open(file_name,'w') as file:
             json.dump(data, file, indent=4)
         self.master.clipboard_clear()
         self.master.clipboard_append(password)
@@ -403,7 +413,7 @@ class PasswordManager:
     def retrieve_password(self):
         service = self.service_entry.get()
         cipher = self.encrypted_key()
-        file_name = 'passwords.json'
+        file_name = self.passwords_file
         
         if not os.path.exists(file_name) or os.stat(file_name).st_size <= 0:
             messagebox.showerror("Error", "No hay contraseñas almacenadas")
@@ -431,13 +441,13 @@ class PasswordManager:
  
     def deleted_password(self):
         service = self.service_entry.get()
-        file_name = 'passwords.json'
+        file_name = self.passwords_file
 
         if not os.path.exists(file_name) or os.stat(file_name).st_size == 0:
             messagebox.showinfo("Info","Sin contraseñas por eliminar.")
             self.delete_password_window.destroy()
         try:
-            with open('passwords.json', 'r') as file:
+            with open(file_name, 'r') as file:
                 data = json.load(file)
         except json.JSONDecodeError:
             messagebox.showerror("Error", "Contraseña no encontrada")
@@ -470,6 +480,9 @@ class PasswordManager:
     ***PROXIMAMENTE EN WINDOWS***
     """
 
+    def chrome_date(self, chrome_data):
+        return datetime(1601, 1,1) + timedelta(microseconds=chrome_data)
+
     def import_chrome(self):
         cipher = self.encrypted_key()
         messagebox.showinfo("Warning", "Experimental Function, only available on Fedora 40")
@@ -481,21 +494,23 @@ class PasswordManager:
             print("Failed to retrieve encryption key.")
             return
 
-        USER = os.environ.get("USER")
-        chrome_password_file = f"/home/{USER}/.config/google-chrome/Default/Login Data"
+        chrome_password_file = os.path.join(os.environ["HOME"], ".config", "google-chrome", "Default", "Login Data")
 
         if not os.path.exists(chrome_password_file):
             messagebox.showerror("Error", "No saved passwords found")
             print("Password file not found:", chrome_password_file)
             return
 
-        filename = "./Loginvault.db"
-        shutil.copy2(chrome_password_file, filename)
-        print("Password file copied to Loginvault.db")
+        filename = "ChromePass.db"
+        shutil.copyfile(chrome_password_file, filename)
+        print("Password file copied to ChromePass.db")
 
         db = sqlite3.connect(filename)
         cursor = db.cursor()
-        cursor.execute("SELECT action_url, username_value, password_value FROM logins")
+        cursor.execute(
+            "select origin_url, action_url, username_value, password_value, date_created, date_last_used from logins "
+            "order by date_last_used"
+        )
         passwords = cursor.fetchall()
         print(f"Passwords found in database: {len(passwords)}")
 
@@ -506,17 +521,20 @@ class PasswordManager:
         all_passwords = []
         existing_services = set()  # Conjunto para mantener servicios únicos
 
-        for index, login in enumerate(passwords):
-            if len(login) < 3:
-                print(f"Skipping incomplete entry at index {index}: {login}")
+        for index, row in enumerate(passwords):
+            if len(row) < 3:
+                print(f"Skipping incomplete entry at index {index}: {row}")
                 continue
 
-            url = login[0]
-            service = login[1].strip()
-            encrypted_chrome_password = login[2]
+            url = row[0]
+            login_page_url = row[1]
+            service = row[2].strip()
+            encrypted_chrome_password = row[3]
             print(f"password encrypted: {encrypted_chrome_password}")
             decrypted_password = self.decrypt_chrome_password(encrypted_chrome_password, key)
             print(f"Decrypted password for {url} {service}: {decrypted_password}")
+            hash_password = self.hash_password(decrypted_password)
+            print(f"hashed: {hash_password}")
 
             if not url and not service in existing_services:
                 continue  
@@ -534,13 +552,17 @@ class PasswordManager:
 
         cursor.close()
         db.close()
+        try:
+            os.remove(filename)
+        except:
+            pass
         self.save_passwords(all_passwords)
         if self.import_password_window:
             self.import_password_window.destroy()
         print("Password import completed.")
 
     def save_passwords(self, passwords):
-        file_name = 'passwords.json'
+        file_name = self.passwords_file
         if not os.path.exists(file_name) or os.stat(file_name).st_size <= 0:
             data = []
         else:
@@ -553,51 +575,37 @@ class PasswordManager:
             json.dump(data, file, indent=4)
         print("Passwords saved to passwords.json")
 
-    def decrypt_chrome_password(self, encrypted_password, key):
+    def decrypt_chrome_password(self, password, key):
         try:
-            kdf = PBKDF2HMAC(
-                algorithm=hashes.SHA256(),
-                length=32,
-                salt=b'saltysalt',
-                iterations=1003,
-                backend=default_backend()
-            )
-            aes_key = kdf.derive(key)
-            iv = encrypted_password[:12]
-            encrypted_password = encrypted_password[12:]
-            cipher = Cipher(algorithms.AES(aes_key), modes.GCM(iv), backend=default_backend())
-            decryptor = cipher.decryptor()
-            decrypted_password = decryptor.update(encrypted_password) + decryptor.finalize()
+            iv = password[3:15]
+            password = password[15:]
 
-            return decrypted_password.decode('utf-8')
-        
+            cipher = Cipher(algorithms.AES(key), modes.GCM(iv), backend=default_backend())
+            decryptor = cipher.decryptor()
+            return decryptor.update(password) + decryptor.finalize()[:-16].decode()
         except Exception as e:
-            print(f"Error decrypting password: {e}")
-            return None
+            messagebox.showerror("Error", f"No existen contraseñas ¨")
 
     def get_chrome_decryption_key(self):
-        entries = [
-            ('application', 'chrome')
-        ]
+        system = platform.system()
+        if system != 'Windows':
+            local_path_linux = os.path.join(os.environ["HOME"], ".config", "google-chrome")
+            path = os.path.join(local_path_linux, "Default")
 
-        for entry in entries:
-            try:
-                result = subprocess.run(
-                    ['secret-tool', 'lookup', entry[0], entry[1]],
-                    capture_output=True,
-                    text=True
-                )
+            for file in os.listdir(path):
+                if file == 'Local State':
+                    file_path = os.path.join(path, file)
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        try:
+                            encrypt = json.load(f)
+                            encrypt_key_linux = base64.b64decode(encrypt["os_crypt"]["encryption_key"])
+                            encrypt_key_linux = encrypt_key_linux[5:]
+                            return encrypt_key_linux
+                        except Exception as e:
+                            print(f"Error loading Local State file: {e}")
+                            return None
+            
 
-                if result.returncode == 0:
-                    return base64.b64decode(result.stdout.strip())
-                else:
-                    print(f"Failed to retrieve encryption key from {entry}. Return code: {result.returncode}")
-                    print("Error output:", result.stderr)
-            except Exception as e:
-                print(f"Error retrieving encryption key from {entry}: {e}")
-
-        print("Failed to retrieve encryption key from any known entry.")
-        return None
     
     #Funcion e interfaz para ver y buscar servicios
 
@@ -610,15 +618,17 @@ class PasswordManager:
         scrollbar = ttk.Scrollbar(self.view_services_window, orient=tk.VERTICAL) #Scrollbar para navegar a través de una libreria extensa
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         
+        file_name = self.passwords_file
+        
         try:
-            with open('passwords.json') as file:
+            with open(file_name) as file:
                 view = json.load(file)
                 services_label = tk.Label(self.view_services_window, text="Servicios Guardados:", bg="#1A1A1A", fg="white")
                 services_label.pack(pady=5)
                 
                 self.service_listbox= tk.Listbox(self.view_services_window, yscrollcommand=scrollbar.set, bg="#1A1A1A", fg="white")
                 for x in view:
-                    self.service_listbox.insert(tk.END, f"- {x['Servicio']}")
+                    self.service_listbox.insert(tk.END, f"{x['Servicio']}")
                 self.service_listbox.pack(fill=tk.BOTH, expand=True)
 
                 scrollbar.config(command=self.service_listbox.yview)
@@ -642,12 +652,13 @@ class PasswordManager:
     def filter_services(self, event):
         search_term = self.search_entry.get().lower()
         self.service_listbox.delete(0, tk.END) 
+        file_name = self.passwords_file
 
-        with open('passwords.json') as file:
+        with open(file_name) as file:
             view = json.load(file)
             for x in view:
                 if search_term in x['Servicio'].lower():
-                    self.service_listbox.insert(tk.END, f"- {x['Servicio']}")
+                    self.service_listbox.insert(tk.END, f"{x['Servicio']}")
 
     #Apartado de funciones 3
     #Este apartado sirve para pasar un valor, decodificarlo o encriptarlo, para al final ser insertado en un objeto
@@ -656,13 +667,14 @@ class PasswordManager:
     
     def hash_password(self, password):
         sha256 = hashlib.sha256()
-        sha256.update(password.encode('utf-8'))
+        sha256.update(password.encode())
         return sha256.hexdigest()
     
     #Encriptacion de contraseñas
     
     def encrypt_password(self, cipher, password):
-        return cipher.encrypt(password.encode()).decode()
+        encrypted_password = cipher.encrypt(password.encode())
+        return encrypted_password.hex()
     
     #Decriptación de contraseñas
     
@@ -682,7 +694,7 @@ class PasswordManager:
     #Encriptar la llave generada
     
     def encrypted_key(self):
-        key_file = 'fernet_key.key'
+        key_file = self.fernet_file
         if os.path.exists(key_file):
             if os.stat(key_file).st_size > 0:
                 with open(key_file,'rb') as f:
@@ -713,7 +725,11 @@ class PasswordManager:
     #Convertir una ruta absoluta a una ruta relativa
 
     def resource_path(self, relative_path):
-        base_path = os.path.abspath(".")
+        system = platform.system()
+        base_path = os.path.abspath(".") 
+        if system.lower() == 'windows':
+            relative_path = relative_path.replace('/', r'\\')
+            
         return os.path.join(base_path, relative_path)
     
     #Version
@@ -752,7 +768,13 @@ def cargando():
     os.system('clear')
 
 def main():
-    cprint("Cargando...", "cyan")
+    system = platform.system()
+    if system != "Windows":
+        os.system('clear')
+    try:
+        print(colored("Cargando...", "cyan"))
+    except Exception:
+        print("Cargando...")    
     cargando()
     root = tk.Tk()
     app = PasswordManager(root)
@@ -760,7 +782,6 @@ def main():
 
 if __name__ == "__main__":
     try:
-        os.system('clear')
         main()
     except KeyboardInterrupt:
         print('\n[*] Abortado')

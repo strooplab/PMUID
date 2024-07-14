@@ -1,0 +1,12 @@
+certifi
+cffi
+charset-normalizer
+cryptography
+idna
+pycparser
+pyfiglet
+requests
+setuptools
+termcolor
+tk
+urllib3

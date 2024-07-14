@@ -1,0 +1,15 @@
+Metadata-Version: 2.1
+Name: PMUID
+Version: 1.1
+Requires-Dist: certifi
+Requires-Dist: cffi
+Requires-Dist: charset-normalizer
+Requires-Dist: cryptography
+Requires-Dist: idna
+Requires-Dist: pycparser
+Requires-Dist: pyfiglet
+Requires-Dist: requests
+Requires-Dist: setuptools
+Requires-Dist: termcolor
+Requires-Dist: tk
+Requires-Dist: urllib3

@@ -1,0 +1,2 @@
+[console_scripts]
+pmuid = pmuid:main

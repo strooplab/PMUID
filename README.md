@@ -24,10 +24,11 @@ pip install tk pyfiglet termcolor cryptography
 
 ## Uso
 
-Para iniciar el programa, simplemente ejecuta el script PMUID.py:
+Para iniciar el programa, debes ejecutar:
 
 ```bash
-./password_manager.py
+make install
+pmuid
 ```
 
 ## Disponible en Windows y Linux
