@@ -12,7 +12,7 @@ tus contraseñas en tu propio entorno!
 """
 
 import tkinter as tk
-import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, time
+import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, time, pkg_resources
 from tkinter import messagebox, ttk, PhotoImage
 from pyfiglet import Figlet
 from termcolor import colored
@@ -45,9 +45,17 @@ class PasswordManager:
         except Exception:
             print(welcome_t)
             print(pmuid_t)
-        self.passwords_file = self.resource_path('src/gen/passwords.json')
-        self.user_file = self.resource_path('src/gen/user_data.json')
-        self.fernet_file = self.resource_path('src/gen/fernet_key.key')
+        gen_dir = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen'))
+        media_dir = self.resource_path(pkg_resources.resource_filename('pmuid', 'media'))
+        if not os.path.exists(gen_dir):
+            os.makedirs(gen_dir)
+        if not os.path.exists(media_dir):
+            os.makedirs(media_dir)
+        elif os.path.exists(media_dir):
+            pass
+        self.passwords_file = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen/passwords.json'))
+        self.user_file = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen/user_data.json'))
+        self.fernet_file = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen/fernet_key.key'))
         self.cipher = self.encrypted_key()
         self.master = master
         self.set_icon()
@@ -232,10 +240,10 @@ class PasswordManager:
         except Exception:
             print(system)
         if system == 'Windows':
-            file = r'src/media/pyramid.ico'
+            file = self.resource_path(pkg_resources.resource_filename('pmuid', r'media\pyramid.ico'))
             icon_file = self.resource_path(file)
         elif system == 'Linux':
-            file = 'src/media/pyramid.png'
+            file = self.resource_path(pkg_resources.resource_filename('pmuid', 'media/pyramid.png'))
             icon_file = self.resource_path(file)
         else:
             print("Unsupported operating system. Defaulting to no icon.")
