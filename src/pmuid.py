@@ -12,7 +12,11 @@ tus contraseñas en tu propio entorno!
 """
 
 import tkinter as tk
+<<<<<<< HEAD
 import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, time, pkg_resources
+=======
+import json, hashlib, os, string, random, stat, platform, sqlite3, base64, shutil, time, sys
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
 from tkinter import messagebox, ttk, PhotoImage
 from pyfiglet import Figlet
 from termcolor import colored
@@ -30,6 +34,7 @@ class PasswordManager:
     #contraseña del usuario y salir del programa
 
     def __init__(self, master):
+<<<<<<< HEAD
         super().__init__()
         modes = ['slant']
         mode_fig = random.choice(modes)
@@ -40,25 +45,52 @@ class PasswordManager:
         pmuid_banner = Figlet(font=mode_fig)
         pmuid_text = pmuid_banner.renderText(pmuid_t)
         try:
+=======
+        self.set_icon()
+        super().__init__()
+        welcome_t = 'Welcome To:'
+        pmuid_t ='PMUID'
+        try:
+            modes = ['slant']
+            mode_fig = random.choice(modes)
+            welcome_banner = Figlet(font='slant')
+            welcome_text = welcome_banner.renderText(welcome_t)
+            pmuid_banner = Figlet(font=mode_fig)
+            pmuid_text = pmuid_banner.renderText(pmuid_t)
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
             print(colored(welcome_text, 'cyan'))
             print(colored(pmuid_text, 'cyan'))
         except Exception:
             print(welcome_t)
             print(pmuid_t)
+<<<<<<< HEAD
         gen_dir = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen'))
         media_dir = self.resource_path(pkg_resources.resource_filename('pmuid', 'media'))
+=======
+        gen_dir = os.path.join(os.path.dirname(__file__), 'gen')
+        media_dir = os.path.join(os.path.dirname(__file__), 'media')
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
         if not os.path.exists(gen_dir):
             os.makedirs(gen_dir)
         if not os.path.exists(media_dir):
             os.makedirs(media_dir)
         elif os.path.exists(media_dir):
             pass
+<<<<<<< HEAD
         self.passwords_file = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen/passwords.json'))
         self.user_file = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen/user_data.json'))
         self.fernet_file = self.resource_path(pkg_resources.resource_filename('pmuid', 'gen/fernet_key.key'))
         self.cipher = self.encrypted_key()
         self.master = master
         self.set_icon()
+=======
+        data_dir = os.path.join(os.path.dirname(__file__), 'gen')  
+        self.passwords_file = os.path.join(data_dir, 'passwords.json')
+        self.user_file = os.path.join(data_dir, 'user_data.json')
+        self.fernet_file = os.path.join(data_dir, 'fernet_key.key')
+        self.cipher = self.encrypted_key()
+        self.master = master
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
         self.master.title("PMUID")
         self.master.geometry("400x300")
         self.master.configure(bg="#121212")
@@ -230,6 +262,7 @@ class PasswordManager:
             messagebox.showerror("Error", "Aún no existe un usuario para hacer un cambio de contraseña")
     
     #Función para definir el icono del programa (depende el sistema operativo)
+<<<<<<< HEAD
 
     def set_icon(self):
         system = platform.system()
@@ -258,6 +291,21 @@ class PasswordManager:
     #Inicio de las interfaces y funciones principales del programa
     #Apartado de interfaces numero 2
     
+=======
+    def set_icon(self):
+        logo_path = self.resource_path(os.path.join('media', 'pyramid.ico'))
+        try:
+            if platform.system() == 'Windows':
+                self.master.iconbitmap(logo_path)
+            else:
+                logo = PhotoImage(file=logo_path)
+                self.master.call('wm', 'iconphoto', self.master._w, logo)
+        except Exception:
+            pass
+    
+    #Inicio de las interfaces y funciones principales del programa
+    #Apartado de interfaces numero 2
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
     def password_management(self):
         self.password_window = tk.Toplevel(self.master)
         self.password_window.title("Welcome")
@@ -733,11 +781,18 @@ class PasswordManager:
     #Convertir una ruta absoluta a una ruta relativa
 
     def resource_path(self, relative_path):
+<<<<<<< HEAD
         system = platform.system()
         base_path = os.path.abspath(".") 
         if system.lower() == 'windows':
             relative_path = relative_path.replace('/', r'\\')
             
+=======
+        try:
+            base_path = sys._MEIPASS2
+        except Exception:
+            base_path = os.path.abspath(".")     
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
         return os.path.join(base_path, relative_path)
     
     #Version
@@ -748,7 +803,11 @@ class PasswordManager:
 
 #Inicialización del programa
 
+<<<<<<< HEAD
 def cargando():
+=======
+def cargando(system):
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
     frames = [
         "[      ]",
         "[*     ]",
@@ -773,17 +832,34 @@ def cargando():
 
     print("[ Bienvenido ]")
     time.sleep(1)
+<<<<<<< HEAD
     os.system('clear')
+=======
+    if system != "Windows":
+        os.system('clear')
+    else:
+        os.system('cls')
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
 
 def main():
     system = platform.system()
     if system != "Windows":
         os.system('clear')
+<<<<<<< HEAD
     try:
         print(colored("Cargando...", "cyan"))
     except Exception:
         print("Cargando...")    
     cargando()
+=======
+        try:
+            print(colored("Cargando...", "cyan"))
+        except Exception:
+            print("Cargando...")    
+        cargando(system)
+    else:
+        os.system('cls')
+>>>>>>> f99586d (Actualizados "pmuid.py", "setup.py", "Makefile", "README.md")
     root = tk.Tk()
     app = PasswordManager(root)
     root.mainloop()

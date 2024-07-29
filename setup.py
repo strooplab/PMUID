@@ -1,7 +1,7 @@
-import os
+import os, platform
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-from shutil import copytree, copy2
+from shutil import copytree
 from src.version import __version__
 
 def package_files(directory):
@@ -61,17 +61,7 @@ class PostInstallCommand(install):
         except FileNotFoundError as e:
             print(f"Warning: {e}")
 
-
-setup(
-    name="pmuid",
-    version=__version__,
-    packages=find_packages(where='src'),
-    package_dir={'': 'src'},
-    package_data={
-        '': package_files('src/gen') + ['media/*'],
-    },
-    py_modules=['pmuid', 'version'],
-    install_requires=[
+install_requires=[
         'certifi',
         'cffi',
         'charset-normalizer',
@@ -84,7 +74,28 @@ setup(
         'termcolor',
         'tk',
         'urllib3',
-    ],
+    ]
+
+if platform.system() == 'Linux':
+    install_requires.extend([
+        'library-linux-only',
+    ])
+elif platform.system() == 'Windows':
+    install_requires.extend([
+        'library-windows-only',
+    ])
+
+setup(
+    name="pmuid",
+    version=__version__,
+    packages=find_packages(where='src'),
+    install_requires=install_requires,
+    package_dir={'': 'src'},
+    package_data={
+        '': package_files('src/gen') + ['media/*'],
+    },
+    py_modules=['pmuid', 'version'],
+    
     entry_points={
         'console_scripts': [
             'pmuid = pmuid:main'
